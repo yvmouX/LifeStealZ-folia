@@ -46,8 +46,8 @@ public final class PlayerDeathListener implements Listener {
 
         UUID playerUUID = player.getUniqueId();
         if (player.hasMetadata("combat_log_npc")) {
-                // If the player is a combat log NPC, get the original player's UUID
-                playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
+        	// If the player is a combat log NPC, get the original player's UUID
+        	playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
         }
         final PlayerData playerData = plugin.getStorage().load(playerUUID);
 
@@ -144,7 +144,7 @@ public final class PlayerDeathListener implements Listener {
                     "&cYou don't have any hearts left!"
             );
             if (player.isOnline()) { // Avoids trying to kick NPCs since they are not online
-                player.kick(kickMessage);
+            	player.kick(kickMessage);
             }
         }, 1L);
 
@@ -260,3 +260,4 @@ public final class PlayerDeathListener implements Listener {
         return gracePeriodManager.isInGracePeriod(player) && !gracePeriodManager.getConfig().gainHearts();
     }
 }
+

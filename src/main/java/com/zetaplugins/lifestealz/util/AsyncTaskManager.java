@@ -27,6 +27,7 @@ public final class AsyncTaskManager {
      */
     public void cancelAllTasks() {
         for (UniversalTask task : runningTasks) {
+            if (task.isCancelled()) continue;
             task.cancel();
         }
         runningTasks.clear();

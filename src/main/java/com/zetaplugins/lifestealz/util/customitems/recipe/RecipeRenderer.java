@@ -43,8 +43,9 @@ final class RecipeRenderer {
     public void cancelAnimations(Inventory inventory) {
         if (animationMap.containsKey(inventory)) {
             for (UniversalTask task : animationMap.get(inventory)) {
-                task.cancel();
+                scheduler.cancelTask(task);
             }
+            animationMap.remove(inventory);
         }
     }
 
@@ -212,16 +213,16 @@ final class RecipeRenderer {
             index.set((currentIndex + 1) % materialList.size());
         };
 
-        UniversalTask task = scheduler.runTimer(runnable, 0L, 20L);
+        UniversalTask task = scheduler.runTimer(runnable, 0, 20L);
+
         if (task.isCancelled()) return;
 
         addAnimation(inventory, task);
 
         // Cancel the task after 30 seconds
         scheduler.runLater(() -> {
-            task.cancel();
-            if (inventory != null)
-                inventory.setItem(slot, new CustomItem(materialList.get(0)).makeForbidden().getItemStack());
+            scheduler.cancelTask(task);
+            if (inventory != null) inventory.setItem(slot, new CustomItem(materialList.get(0)).makeForbidden().getItemStack());
         }, 20 * 30);
     }
 
