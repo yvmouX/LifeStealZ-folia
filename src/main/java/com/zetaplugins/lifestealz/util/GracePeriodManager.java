@@ -1,5 +1,6 @@
 package com.zetaplugins.lifestealz.util;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
 import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 public final class GracePeriodManager {
     private final LifeStealZ plugin;
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
 
     public GracePeriodManager(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -81,7 +83,7 @@ public final class GracePeriodManager {
         // Duration in ticks: 20 ticks = 1 second
         final long gracePeriodDuration = (long) getConfig().getDuration() * 20;
 
-        SchedulerUtils.runTaskLater(plugin, () -> {
+        scheduler.runLater(player, () -> {
             endGracePeriod(player);
         }, gracePeriodDuration);
     }

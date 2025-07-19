@@ -1,5 +1,7 @@
 package com.zetaplugins.lifestealz.commands.MainCommand.subcommands;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
+import cn.yvmou.ylib.api.scheduler.UniversalTask;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
 import com.zetaplugins.lifestealz.LifeStealZ;
@@ -13,6 +15,7 @@ import static com.zetaplugins.lifestealz.util.commands.CommandUtils.throwUsageEr
 public final class DataSubCommand implements SubCommand {
     private final Storage storage;
     private final LifeStealZ plugin;
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
 
     public DataSubCommand(LifeStealZ plugin) {
         this.storage = plugin.getStorage();
@@ -50,7 +53,7 @@ public final class DataSubCommand implements SubCommand {
                 "exportingData",
                 "&7Exporting player data..."
         ));
-        SchedulerUtils.UniversalTask task = SchedulerUtils.runTaskAsynchronously(plugin, () -> {
+        UniversalTask task = scheduler.runAsync(() -> {
             String filePath = storage.export(fileName);
             if (filePath != null) {
                 sender.sendMessage(MessageUtils.getAndFormatMsg(
@@ -77,7 +80,7 @@ public final class DataSubCommand implements SubCommand {
                 "importingData",
                 "&7Importing player data..."
         ));
-        SchedulerUtils.UniversalTask task =SchedulerUtils.runTaskAsynchronously(plugin, () -> {
+        UniversalTask task =scheduler.runAsync(() -> {
             storage.importData(fileName);
             sender.sendMessage(MessageUtils.getAndFormatMsg(
                     true,

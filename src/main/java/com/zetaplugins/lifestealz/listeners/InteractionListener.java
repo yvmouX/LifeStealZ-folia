@@ -1,5 +1,6 @@
 package com.zetaplugins.lifestealz.listeners;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
 import com.zetaplugins.lifestealz.util.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -23,6 +24,7 @@ import java.util.List;
 
 public final class InteractionListener implements Listener {
     private final LifeStealZ plugin;
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
 
     public InteractionListener(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -231,7 +233,7 @@ public final class InteractionListener implements Listener {
 
         player.getInventory().setItemInOffHand(fakeTotem);
         // if you dont do a delay, it appears to use default texture
-        SchedulerUtils.runTaskLater(plugin, () -> {
+        scheduler.runLater(player, () -> {
             // Play the totem animation
             player.playEffect(EntityEffect.PROTECTED_FROM_DEATH);
             player.getInventory().setItemInOffHand(originalOffHandItem);

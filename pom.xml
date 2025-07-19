@@ -157,6 +157,10 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
 
     </repositories>
 
@@ -215,6 +219,11 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.yvmouX</groupId>
+            <artifactId>YLib</artifactId>
+            <version>1.0.0-beta2</version>
         </dependency>
 
     </dependencies>

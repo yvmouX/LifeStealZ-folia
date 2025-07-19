@@ -1,7 +1,7 @@
 package com.zetaplugins.lifestealz;
 
+import cn.yvmou.ylib.YLib;
 import com.zetaplugins.lifestealz.util.*;
-import com.tcoded.folialib.FoliaLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 public final class LifeStealZ extends JavaPlugin {
 
-    private static FoliaLib foliaLib;
+    private static YLib yLib;
     private VersionChecker versionChecker;
     private Storage storage;
     private WorldGuardManager worldGuardManager;
@@ -47,7 +47,7 @@ public final class LifeStealZ extends JavaPlugin {
     private ReviveBeaconEffectManager reviveBeaconEffectManager;
     private final boolean hasWorldGuard = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
     private final boolean hasPlaceholderApi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
-    private final boolean hasGeyser = Bukkit.getPluginManager().getPlugin("Geyser-Spigot") != null;
+    private final boolean hasGeyser = Bukkit.getPluginManager().getPlugin("floodgate") != null;
 
     public static Map<Location, ReviveTask> reviveTasks = new HashMap<>();
 
@@ -81,7 +81,7 @@ public final class LifeStealZ extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
 
-        foliaLib = new FoliaLib(this);
+        yLib = new YLib(this);
 
         asyncTaskManager = new AsyncTaskManager();
         reviveBeaconEffectManager = new ReviveBeaconEffectManager(this);
@@ -239,7 +239,7 @@ public final class LifeStealZ extends JavaPlugin {
         return this.getFile();
     }
 
-    public static FoliaLib getFoliaLib() {
-        return foliaLib;
+    public static YLib getyLib() {
+        return yLib;
     }
 }

@@ -1,5 +1,6 @@
 package com.zetaplugins.lifestealz.commands.MainCommand.subcommands;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 
 public final class DebugSubCommand implements SubCommand {
     private final LifeStealZ plugin;
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
 
     public DebugSubCommand(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -45,7 +47,7 @@ public final class DebugSubCommand implements SubCommand {
         ));
 
         // Run asynchronously
-        SchedulerUtils.runTaskAsynchronously(plugin, () -> {
+        scheduler.runAsync(() -> {
             try {
                 String debugDump = generateDebugDump();
                 String pasteUrl = uploadToMclogs(debugDump);
@@ -56,9 +58,9 @@ public final class DebugSubCommand implements SubCommand {
 
                     // Create a formatted message with a clickable link
                     Component message = MessageUtils.getAndFormatMsg(
-                   false,
-                       "debugReportUploaded",
-                     "&aDebug report uploaded: "
+                                    false,
+                                    "debugReportUploaded",
+                                    "&aDebug report uploaded: "
                             )
                             .append(
                                     MessageUtils.formatMsg("&7" + pasteUrl)

@@ -1,5 +1,7 @@
 package com.zetaplugins.lifestealz.util.customitems.recipe;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
+import cn.yvmou.ylib.api.scheduler.UniversalTask;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,7 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 final class RecipeRenderer {
     private final LifeStealZ plugin;
-    private final Map<Inventory, List<SchedulerUtils.UniversalTask>> animationMap = new HashMap<>();
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
+    private final Map<Inventory, List<UniversalTask>> animationMap = new HashMap<>();
 
     public RecipeRenderer(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -28,7 +31,7 @@ final class RecipeRenderer {
      * @param inventory The inventory to save the animation for
      * @param taskId The task id of the animation
      */
-    private void addAnimation(Inventory inventory, SchedulerUtils.UniversalTask task) {
+    private void addAnimation(Inventory inventory, UniversalTask task) {
         if (animationMap.containsKey(inventory)) animationMap.get(inventory).add(task);
         else animationMap.put(inventory, new ArrayList<>(Collections.singletonList(task)));
     }
@@ -39,7 +42,7 @@ final class RecipeRenderer {
      */
     public void cancelAnimations(Inventory inventory) {
         if (animationMap.containsKey(inventory)) {
-            for (SchedulerUtils.UniversalTask task : animationMap.get(inventory)) {
+            for (UniversalTask task : animationMap.get(inventory)) {
                 task.cancel();
             }
         }
@@ -209,13 +212,13 @@ final class RecipeRenderer {
             index.set((currentIndex + 1) % materialList.size());
         };
 
-        SchedulerUtils.UniversalTask task = SchedulerUtils.scheduleSyncRepeatingTask(plugin, runnable, 0L, 20L);
+        UniversalTask task = scheduler.runTimer(runnable, 0L, 20L);
         if (task.isCancelled()) return;
 
         addAnimation(inventory, task);
 
         // Cancel the task after 30 seconds
-        SchedulerUtils.scheduleSyncDelayedTask(plugin, () -> {
+        scheduler.runLater(() -> {
             task.cancel();
             if (inventory != null)
                 inventory.setItem(slot, new CustomItem(materialList.get(0)).makeForbidden().getItemStack());

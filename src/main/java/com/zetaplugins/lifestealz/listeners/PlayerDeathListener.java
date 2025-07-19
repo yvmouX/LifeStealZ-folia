@@ -1,5 +1,6 @@
 package com.zetaplugins.lifestealz.listeners;
 
+import cn.yvmou.ylib.api.scheduler.UniversalScheduler;
 import com.zetaplugins.lifestealz.util.CooldownManager;
 import com.zetaplugins.lifestealz.util.GracePeriodManager;
 import com.zetaplugins.lifestealz.util.MessageUtils;
@@ -29,6 +30,7 @@ import static com.zetaplugins.lifestealz.util.MaxHeartsManager.getMaxHearts;
 public final class PlayerDeathListener implements Listener {
 
     private final LifeStealZ plugin;
+    private final UniversalScheduler scheduler = LifeStealZ.getyLib().getScheduler();
 
     public PlayerDeathListener(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -44,8 +46,8 @@ public final class PlayerDeathListener implements Listener {
 
         UUID playerUUID = player.getUniqueId();
         if (player.hasMetadata("combat_log_npc")) {
-                // If the player is a combat log NPC, get the original player's UUID
-                playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
+            // If the player is a combat log NPC, get the original player's UUID
+            playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
         }
         final PlayerData playerData = plugin.getStorage().load(playerUUID);
 
@@ -118,7 +120,7 @@ public final class PlayerDeathListener implements Listener {
         final boolean disableBanOnElimination = plugin.getConfig().getBoolean("disablePlayerBanOnElimination");
         final boolean announceElimination = plugin.getConfig().getBoolean("announceElimination");
 
-        SchedulerUtils.scheduleSyncDelayedTask(plugin, () -> {
+        scheduler.runLater(() -> {
             for (String command : elimCommands) {
                 plugin.getServer().dispatchCommand(
                         plugin.getServer().getConsoleSender(),
@@ -135,11 +137,12 @@ public final class PlayerDeathListener implements Listener {
             return;
         }
 
-        SchedulerUtils.scheduleSyncDelayedTask(plugin, () -> {
+        scheduler.runLater(() -> {
             Component kickMessage = MessageUtils.getAndFormatMsg(
                     false,
                     "eliminatedJoin",
-                    "&cYou don't have any hearts left!");
+                    "&cYou don't have any hearts left!"
+            );
             if (player.isOnline()) { // Avoids trying to kick NPCs since they are not online
                 player.kick(kickMessage);
             }
@@ -182,7 +185,8 @@ public final class PlayerDeathListener implements Listener {
             killer.sendMessage(MessageUtils.getAndFormatMsg(
                     false,
                     "heartGainCooldown",
-                    "&cYou have to wait before gaining another heart!", new MessageUtils.Replaceable("%time%", MessageUtils.formatTime(timeLeft))
+                    "&cYou have to wait before gaining another heart!",
+                    new MessageUtils.Replaceable("%time%", MessageUtils.formatTime(timeLeft))
             ));
             if (heartGainCooldownDropOnCooldown) {
                 dropHeartsNaturally(killer.getLocation(), (int) (healthGain / 2), CustomItemManager.createHeartGainCooldownHeart());
@@ -216,13 +220,16 @@ public final class PlayerDeathListener implements Listener {
 
         if (victimIP != null && victimIP.equals(killerIP) && plugin.getConfig().getBoolean("antiAlt.enabled")) {
             if (plugin.getConfig().getBoolean("antiAlt.logAttempt")) {
-                plugin.getLogger().info("[ALT WARNING] Player " + killer.getName() + " tried to kill " + player.getName() + " with the same IP address! (Probably an alt account)");
+                plugin.getLogger().info("[ALT WARNING] Player " + killer.getName() + " tried to kill "
+                        + player.getName() + " with the same IP address! (Probably an alt account)");
             }
             if (plugin.getConfig().getBoolean("antiAlt.sendMessage")) {
-                killer.sendMessage(MessageUtils.getAndFormatMsg(false, "altKill", "&cPlease don't kill alts! This attempt has been logged!"));
+                killer.sendMessage(MessageUtils.getAndFormatMsg(false, "altKill",
+                        "&cPlease don't kill alts! This attempt has been logged!"));
             }
             for (String command : plugin.getConfig().getStringList("antiAlt.commands")) {
-                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command.replace("&player&", killer.getName()));
+                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(),
+                        command.replace("&player&", killer.getName()));
             }
             return plugin.getConfig().getBoolean("antiAlt.preventKill");
         }
@@ -253,4 +260,3 @@ public final class PlayerDeathListener implements Listener {
         return gracePeriodManager.isInGracePeriod(player) && !gracePeriodManager.getConfig().gainHearts();
     }
 }
-
