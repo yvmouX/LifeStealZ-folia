@@ -46,8 +46,8 @@ public final class PlayerDeathListener implements Listener {
 
         UUID playerUUID = player.getUniqueId();
         if (player.hasMetadata("combat_log_npc")) {
-            // If the player is a combat log NPC, get the original player's UUID
-            playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
+                // If the player is a combat log NPC, get the original player's UUID
+                playerUUID = (UUID) player.getMetadata("combat_log_npc").get(0).value();
         }
         final PlayerData playerData = plugin.getStorage().load(playerUUID);
 
