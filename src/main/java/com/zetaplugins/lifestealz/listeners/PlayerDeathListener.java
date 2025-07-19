@@ -137,7 +137,7 @@ public final class PlayerDeathListener implements Listener {
             return;
         }
 
-        scheduler.runLater(() -> {
+        scheduler.runLater(player, () -> {
             Component kickMessage = MessageUtils.getAndFormatMsg(
                     false,
                     "eliminatedJoin",
