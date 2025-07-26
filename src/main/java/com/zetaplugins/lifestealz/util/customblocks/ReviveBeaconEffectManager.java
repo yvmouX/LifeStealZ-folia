@@ -1,5 +1,7 @@
 package com.zetaplugins.lifestealz.util.customblocks;
 
+import cn.yvmou.ylib.api.scheduler.UniversalTask;
+import cn.yvmou.ylib.impl.scheduler.UniversalRunnable;
 import org.bukkit.Sound;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
@@ -8,8 +10,6 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -21,10 +21,10 @@ import java.util.Set;
 
 public final class ReviveBeaconEffectManager {
     private final LifeStealZ plugin;
-    private final Map<Location, BukkitTask> idleParticleBeacons;
-    private final Map<Location, BukkitTask> revivingParticleBeacons;
+    private final Map<Location, UniversalTask> idleParticleBeacons;
+    private final Map<Location, UniversalTask> revivingParticleBeacons;
     private final Map<Location, Set<BlockDisplay>> lasers;
-    private final Map<Location, BukkitTask> laserGrowTasks;
+    private final Map<Location, UniversalTask> laserGrowTasks;
     private final Map<Location, BlockDisplay> decoyDisplays;
 
     public ReviveBeaconEffectManager(LifeStealZ plugin) {
@@ -49,13 +49,13 @@ public final class ReviveBeaconEffectManager {
 
         if (!showEnchantParticles) return;
 
-        var runnable = new BukkitRunnable() {
+        var runnable = new UniversalRunnable() {
             final Location center = location.clone().add(0.5, 1.0, 0.5);
 
             public void run() {
                 center.getWorld().spawnParticle(Particle.ENCHANT, center, 25, 0.6, 0.5, 0.6, 0.0);
             }
-        }.runTaskTimer(plugin, 0L, 10L);
+        }.runTimer(plugin, 0L, 10L);
 
         idleParticleBeacons.put(getKey(location), runnable);
     }
@@ -78,7 +78,7 @@ public final class ReviveBeaconEffectManager {
         location.getWorld().playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
 
         if (showParticleRing) {
-            var runnable = new BukkitRunnable() {
+            var runnable = new UniversalRunnable() {
                 final Location center = location.clone().add(0.5, 1.0, 0.5);
 
                 public void run() {
@@ -86,7 +86,7 @@ public final class ReviveBeaconEffectManager {
 
                     spawnRing(center, particleColor);
                 }
-            }.runTaskTimer(plugin, 0L, 10L);
+            }.runTimer(plugin, 0L, 10L);
 
             revivingParticleBeacons.put(getKey(location), runnable);
         }
@@ -99,7 +99,7 @@ public final class ReviveBeaconEffectManager {
         BossBar bossBar = Bukkit.createBossBar("", parseBarColor(plugin.getConfig().getString("bossbarColor").toUpperCase(), BarColor.RED), parseBarStyle(plugin.getConfig().getString("bossbarStyle").toUpperCase(), BarStyle.SOLID));
         bossBar.setVisible(true);
 
-        new BukkitRunnable() {
+        new UniversalRunnable() {
             int timeleft = countdown;
 
             public void run() {
@@ -143,7 +143,7 @@ public final class ReviveBeaconEffectManager {
                 bossBar.setTitle(ChatColor.translateAlternateColorCodes('&', title));
                 timeleft--;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTimer(plugin, 0L, 20L);
     }
 
     /**
@@ -182,7 +182,7 @@ public final class ReviveBeaconEffectManager {
                 new Quaternionf()
         ));
 
-        new BukkitRunnable() {
+        new UniversalRunnable() {
             float currentHeight = initialHeight;
 
             @Override
@@ -204,7 +204,7 @@ public final class ReviveBeaconEffectManager {
                         new Quaternionf()
                 ));
             }
-        }.runTaskTimer(plugin, 0L, tickInterval);
+        }.runTimer(plugin, 0L, tickInterval);
     }
 
     /**
@@ -285,7 +285,7 @@ public final class ReviveBeaconEffectManager {
         quartz.setTransformation(new Transformation(translation, noRotation, initialQuartzScale, noRotation));
         glass.setTransformation(new Transformation(translation, noRotation, initialGlassScale, noRotation));
 
-        BukkitTask lasergrowTask = new BukkitRunnable() {
+        UniversalTask lasergrowTask = new UniversalRunnable() {
             float currentHeight = 0.1f;
 
             @Override
@@ -303,7 +303,7 @@ public final class ReviveBeaconEffectManager {
                         translation, noRotation, new Vector3f(width2, currentHeight, width2), noRotation
                 ));
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTimer(plugin, 0L, 1L);
 
         laserGrowTasks.put(getKey(location), lasergrowTask);
     }
@@ -313,7 +313,7 @@ public final class ReviveBeaconEffectManager {
      * @param location The location of the Revive Beacon where the particles will be stopped.
      */
     public void stopIdlePArticles(Location location) {
-        BukkitTask task = idleParticleBeacons.remove(getKey(location));
+        UniversalTask task = idleParticleBeacons.remove(getKey(location));
         if (task != null) task.cancel();
     }
 
@@ -322,7 +322,7 @@ public final class ReviveBeaconEffectManager {
      * @param location The location of the Revive Beacon where the particles will be stopped.
      */
     public void stopRevivingParticles(Location location) {
-        BukkitTask task = revivingParticleBeacons.remove(getKey(location));
+        UniversalTask task = revivingParticleBeacons.remove(getKey(location));
         if (task != null) task.cancel();
     }
 
@@ -334,7 +334,7 @@ public final class ReviveBeaconEffectManager {
     public void removeLaser(Location location) {
         Location key = getKey(location);
 
-        BukkitTask growTask = laserGrowTasks.remove(key);
+        UniversalTask growTask = laserGrowTasks.remove(key);
         if (growTask != null) growTask.cancel();
 
         Set<BlockDisplay> displays = lasers.remove(key);
@@ -342,7 +342,7 @@ public final class ReviveBeaconEffectManager {
 
         final float collapseSpeed = 1f;
 
-        new BukkitRunnable() {
+        new UniversalRunnable() {
             float currentHeight = displays.stream()
                     .findFirst()
                     .map(d -> d.getTransformation().getScale().y)
@@ -376,7 +376,7 @@ public final class ReviveBeaconEffectManager {
                     ));
                 }
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTimer(plugin, 0L, 1L);
     }
 
     /**
@@ -405,16 +405,16 @@ public final class ReviveBeaconEffectManager {
      * This method is typically called when the plugin is disabled or when all Revive Beacons are removed.
      */
     public void clearAllEffects() {
-        for (BukkitTask task : idleParticleBeacons.values()) task.cancel();
+        for (UniversalTask task : idleParticleBeacons.values()) task.cancel();
         idleParticleBeacons.clear();
-        for (BukkitTask task : revivingParticleBeacons.values()) task.cancel();
+        for (UniversalTask task : revivingParticleBeacons.values()) task.cancel();
         revivingParticleBeacons.clear();
         for (Set<BlockDisplay> displays : lasers.values()) {
             if (displays == null) continue;
             for (var display : displays) if (display != null) display.remove();
         }
         lasers.clear();
-        for (BukkitTask task : laserGrowTasks.values()) task.cancel();
+        for (UniversalTask task : laserGrowTasks.values()) task.cancel();
         laserGrowTasks.clear();
         for (BlockDisplay display : decoyDisplays.values()) if (display != null) display.remove();
         decoyDisplays.clear();

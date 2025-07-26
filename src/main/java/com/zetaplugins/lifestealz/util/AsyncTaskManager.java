@@ -1,7 +1,6 @@
 package com.zetaplugins.lifestealz.util;
 
 import cn.yvmou.ylib.api.scheduler.UniversalTask;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;

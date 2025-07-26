@@ -125,6 +125,13 @@
                             your main class if needed -->
                         </transformer>
                     </transformers>
+                    <relocations>
+                        <relocation>
+                            <pattern>cn.yvmou.ylib</pattern>
+                            <!-- !! MAKE SURE TO CHANGE THIS TO YOUR PLUGIN'S GROUP & PLUGIN NAME !! -->
+                            <shadedPattern>com.zetaplugins.lifestealz.lib.folialib</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
             </plugin>
         </plugins>
@@ -223,7 +230,7 @@
         <dependency>
             <groupId>com.github.yvmouX</groupId>
             <artifactId>YLib</artifactId>
-            <version>1.0.0-beta2</version>
+            <version>1.0.0-beta4</version>
         </dependency>
 
     </dependencies>

@@ -1,7 +1,7 @@
 package com.zetaplugins.lifestealz.util;
 
+import cn.yvmou.ylib.api.scheduler.UniversalTask;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
 
@@ -15,4 +15,4 @@ import java.util.UUID;
  * @param start           The timestamp when the revive process started (unix epoch in seconds).
  * @param durationSeconds The duration of the revive process in seconds.
  */
-public record ReviveTask(Location location, BukkitTask task, UUID reviver, UUID target, long start, int durationSeconds) {}
+public record ReviveTask(Location location, UniversalTask task, UUID reviver, UUID target, long start, int durationSeconds) {}

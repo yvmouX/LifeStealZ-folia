@@ -1,5 +1,7 @@
 package com.zetaplugins.lifestealz.listeners;
 
+import cn.yvmou.ylib.api.scheduler.UniversalTask;
+import cn.yvmou.ylib.impl.scheduler.UniversalRunnable;
 import com.zetaplugins.lifestealz.util.GuiManager;
 import com.zetaplugins.lifestealz.util.MessageUtils;
 import com.zetaplugins.lifestealz.util.ReviveTask;
@@ -15,8 +17,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.util.commands.CommandUtils;
 import com.zetaplugins.lifestealz.util.customblocks.CustomBlock;
@@ -353,7 +353,7 @@ public final class InventoryClickListener implements Listener {
                 itemData.getReviveTime()
         );
 
-        BukkitTask reviveTask = new BukkitRunnable() {
+        UniversalTask reviveTask = new UniversalRunnable() {
             @Override
             public void run() {
                 applyReviveData(data);
@@ -363,7 +363,7 @@ public final class InventoryClickListener implements Listener {
                 beaconLocation.getBlock().setType(Material.AIR);
                 beaconLocation.getWorld().playSound(beaconLocation, Sound.ENTITY_PLAYER_LEVELUP, 500.0f, 1.0f);
             }
-        }.runTaskLater(plugin, itemData.getReviveTime() * 20L);
+        }.runLater(plugin, itemData.getReviveTime() * 20L);
 
         LifeStealZ.reviveTasks.put(beaconLocation, new ReviveTask(
                 beaconLocation,
